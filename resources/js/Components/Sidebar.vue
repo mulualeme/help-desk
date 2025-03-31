@@ -5,17 +5,10 @@ import Dropdown from "@/Components/Dropdown.vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import {
     LayoutDashboard,
-    LogOut,
-    Ticket,
-    BookOpen,
-    Users,
-    UsersRound,
-    MessageSquareQuote,
-    UserRound,
+    Building2,
     ChevronDown,
     ChevronFirst,
     ChevronLast,
-    Settings,
 } from "lucide-vue-next";
 
 const props = defineProps({
@@ -30,18 +23,16 @@ const emit = defineEmits(["update:isSidebarOpen"]);
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
-const hasRole = (role) => {
-    return user.value?.roles?.some((r) => r.name === role);
+const hasPermission = (permission) => {
+    return user.value?.permissions?.includes(permission);
 };
 
 const dashboardRoute = computed(() => {
-    if (hasRole("admin")) return "dashboard";
-    if (hasRole("agent")) return "dashboard";
     return "dashboard";
 });
 
 const isActive = (href) => {
-    if (href === dashboardRoute.value) {
+    if (href === "dashboard") {
         return route().current("dashboard");
     }
     return route().current(href) || route().current(href + ".*");
@@ -51,60 +42,21 @@ const navigation = computed(() => {
     const items = [
         {
             name: "Dashboard",
-            href: dashboardRoute.value,
+            href: "dashboard",
             icon: LayoutDashboard,
-            roles: null, // Always visible
+            permission: null, // Always visible
+        },
+        {
+            name: "Departments",
+            href: "departments.index",
+            icon: Building2,
+            permission: "view department",
         },
     ];
 
-    // Add role-specific items
-    if (hasRole("admin") || hasRole("agent")) {
-        items.push(
-            {
-                name: "Tickets",
-                href: "tickets.index",
-                icon: Ticket,
-                roles: ["admin", "agent"],
-            },
-            {
-                name: "Knowledge Base",
-                href: "knowledge-base.index",
-                icon: BookOpen,
-                roles: ["admin", "agent"],
-            }
-        );
-    }
-
-    // Customer can view tickets and knowledge base
-    if (hasRole("customer")) {
-        items.push(
-            {
-                name: "My Tickets",
-                href: "tickets.index",
-                icon: Ticket,
-                roles: ["customer"],
-            },
-            {
-                name: "Knowledge Base",
-                href: "knowledge-base.index",
-                icon: BookOpen,
-                roles: ["customer"],
-            }
-        );
-    }
-
-    if (hasRole("admin")) {
-        items.push({
-            name: "Teams",
-            href: "teams.index",
-            icon: UsersRound,
-            roles: ["admin"],
-        });
-    }
-
-    // Filter items based on user roles
+    // Filter items based on user permissions
     return items.filter(
-        (item) => !item.roles || item.roles.some((role) => hasRole(role))
+        (item) => !item.permission || hasPermission(item.permission)
     );
 });
 

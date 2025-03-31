@@ -1,9 +1,23 @@
 <template>
-    <Head title="Edit Department" />
+    <Head :title="`Edit ${department.name}`" />
 
     <AuthenticatedLayout>
         <template #header>
-            <Breadcrumb :items="[{ label: 'Edit Department' }]" />
+            <div class="flex flex-col space-y-4">
+                <Breadcrumb
+                    :items="[
+                        {
+                            label: 'Departments',
+                            href: route('departments.index'),
+                        },
+                        {
+                            label: department.name,
+                            href: route('departments.show', department.id),
+                        },
+                        { label: 'Edit' },
+                    ]"
+                />
+            </div>
         </template>
 
         <div class="py-12">
@@ -27,6 +41,7 @@ import { Head } from "@inertiajs/vue3";
 import { useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import DepartmentForm from "./Partials/DepartmentForm.vue";
+import Breadcrumb from "@/Components/Breadcrumb.vue";
 
 const props = defineProps({
     department: Object,
