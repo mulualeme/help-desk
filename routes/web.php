@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DepartmentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,6 +23,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Department routes
+    Route::resource('departments', DepartmentController::class);
+    
+    // Department agent management routes
+    Route::post('/departments/{department}/agents', [DepartmentController::class, 'assignAgent'])
+        ->name('departments.assign-agent');
+    Route::delete('/departments/{department}/agents/{user}', [DepartmentController::class, 'removeAgent'])
+        ->name('departments.remove-agent');
+    Route::get('/departments/{department}/available-agents', [DepartmentController::class, 'getAvailableAgents'])
+        ->name('departments.available-agents');
 });
 
 require __DIR__.'/auth.php';

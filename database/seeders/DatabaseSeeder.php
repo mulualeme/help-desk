@@ -20,23 +20,23 @@ class DatabaseSeeder extends Seeder
         // Create Admin User
         $admin = User::create([
             'name' => 'Admin User',
-            'email' => 'admin@helpdesk.com',
-            'password' => Hash::make('password123'),
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
         ]);
         $admin->assignRole('admin');
 
         // Create Agent Users
         $agent1 = User::create([
             'name' => 'Agent One',
-            'email' => 'agent1@helpdesk.com',
-            'password' => Hash::make('password123'),
+            'email' => 'agent1@example.com',
+            'password' => Hash::make('password'),
         ]);
         $agent1->assignRole('agent');
 
         $agent2 = User::create([
             'name' => 'Agent Two',
-            'email' => 'agent2@helpdesk.com',
-            'password' => Hash::make('password123'),
+            'email' => 'agent2@example.com',
+            'password' => Hash::make('password'),
         ]);
         $agent2->assignRole('agent');
 
@@ -44,14 +44,14 @@ class DatabaseSeeder extends Seeder
         $customer1 = User::create([
             'name' => 'Customer One',
             'email' => 'customer1@example.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('password'),
         ]);
         $customer1->assignRole('customer');
 
         $customer2 = User::create([
             'name' => 'Customer Two',
             'email' => 'customer2@example.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('password'),
         ]);
         $customer2->assignRole('customer');
 
