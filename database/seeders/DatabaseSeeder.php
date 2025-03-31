@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +14,50 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Run the roles and permissions seeder first
+        $this->call(RolesandPermissionSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Create Admin User
+        $admin = User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@helpdesk.com',
+            'password' => Hash::make('password123'),
         ]);
+        $admin->assignRole('admin');
+
+        // Create Agent Users
+        $agent1 = User::create([
+            'name' => 'Agent One',
+            'email' => 'agent1@helpdesk.com',
+            'password' => Hash::make('password123'),
+        ]);
+        $agent1->assignRole('agent');
+
+        $agent2 = User::create([
+            'name' => 'Agent Two',
+            'email' => 'agent2@helpdesk.com',
+            'password' => Hash::make('password123'),
+        ]);
+        $agent2->assignRole('agent');
+
+        // Create Customer Users
+        $customer1 = User::create([
+            'name' => 'Customer One',
+            'email' => 'customer1@example.com',
+            'password' => Hash::make('password123'),
+        ]);
+        $customer1->assignRole('customer');
+
+        $customer2 = User::create([
+            'name' => 'Customer Two',
+            'email' => 'customer2@example.com',
+            'password' => Hash::make('password123'),
+        ]);
+        $customer2->assignRole('customer');
+
+        // Create additional random customers
+        User::factory(5)->create()->each(function ($user) {
+            $user->assignRole('customer');
+        });
     }
 }
