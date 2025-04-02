@@ -15,13 +15,16 @@
                         ]"
                     />
 
-                    <Link
+                    <PrimaryButton
                         v-if="can.edit"
-                        :href="route('departments.edit', department.id)"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold -my-1 py-2 px-4 rounded"
+                        @click="
+                            $inertia.visit(
+                                route('departments.edit', department.id)
+                            )
+                        "
                     >
                         Edit Department
-                    </Link>
+                    </PrimaryButton>
                 </div>
             </div>
         </template>
@@ -126,6 +129,7 @@ import { Head, Link, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import AgentAssignment from "./Partials/AgentAssignment.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     department: Object,

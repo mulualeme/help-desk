@@ -38,6 +38,15 @@ class RolesandPermissionSeeder extends Seeder
         // Agent management permissions
         Permission::create(['name' => 'manage agents']);
         Permission::create(['name' => 'view agents']);
+        Permission::create(['name' => 'invite agents']);
+        Permission::create(['name' => 'edit agent roles']);
+        Permission::create(['name' => 'delete agents']);
+        
+        // Customer management permissions
+        Permission::create(['name' => 'view customers']);
+        Permission::create(['name' => 'create customers']);
+        Permission::create(['name' => 'edit customers']);
+        Permission::create(['name' => 'delete customers']);
 
         // Create roles and assign permissions
         $adminRole = Role::create(['name' => 'admin']);
@@ -60,7 +69,14 @@ class RolesandPermissionSeeder extends Seeder
             'reopen ticket',
             'comment on ticket',
             'manage agents',
-            'view agents'
+            'view agents',
+            'invite agents',
+            'edit agent roles',
+            'delete agents',
+            'view customers',
+            'create customers',
+            'edit customers',
+            'delete customers'
         ]);
 
         // Agent permissions
