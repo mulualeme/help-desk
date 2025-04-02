@@ -6,19 +6,24 @@
                 {{ itemName }}
             </div>
             <div class="flex flex-wrap gap-1">
-                <Link
-                    v-for="(link, i) in links"
-                    :key="i"
-                    :href="link.url"
-                    class="px-4 py-2 border text-sm rounded-md"
-                    :class="{
-                        'bg-gray-900 text-white': link.active,
-                        'bg-white text-gray-700 hover:bg-gray-50': !link.active,
-                        'opacity-50 cursor-not-allowed': !link.url,
-                    }"
-                    v-html="link.label"
-                    :disabled="!link.url"
-                />
+                <template v-for="(link, i) in links" :key="i">
+                    <Link
+                        v-if="link.url"
+                        :href="link.url"
+                        class="px-4 py-2 border text-sm rounded-md"
+                        :class="{
+                            'bg-gray-900 text-white': link.active,
+                            'bg-white text-gray-700 hover:bg-gray-50':
+                                !link.active,
+                        }"
+                        v-html="link.label"
+                    />
+                    <span
+                        v-else
+                        class="px-4 py-2 border text-sm rounded-md bg-white text-gray-700 opacity-50 cursor-not-allowed"
+                        v-html="link.label"
+                    />
+                </template>
             </div>
         </div>
     </div>

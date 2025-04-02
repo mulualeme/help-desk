@@ -267,8 +267,8 @@ const filteredCustomers = computed(() => {
     return filtered;
 });
 
-const navigateToCustomer = (id) => {
-    router.visit(route("customers.show", id), {
+const navigateToCustomer = (customer) => {
+    router.visit(route("customers.show", customer.id), {
         preserveState: true,
         preserveScroll: true,
     });
