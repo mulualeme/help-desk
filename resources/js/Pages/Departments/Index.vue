@@ -6,13 +6,12 @@
             <div class="flex flex-col space-y-4">
                 <div class="flex justify-between items-center">
                     <Breadcrumb :items="[{ label: 'Departments' }]" />
-                    <Link
+                    <PrimaryButton
                         v-if="can.create"
-                        :href="route('departments.create')"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold -my-1 py-2 px-4 rounded"
+                        @click="showCreateModal = true"
                     >
                         Create Department
-                    </Link>
+                    </PrimaryButton>
                 </div>
             </div>
         </template>
@@ -135,14 +134,23 @@
                 </div>
             </div>
         </div>
+
+        <!-- Create Department Modal -->
+        <CreateDepartmentModal
+            :show="showCreateModal"
+            @close="showCreateModal = false"
+        />
     </AuthenticatedLayout>
 </template>
 
 <script setup>
+import { ref } from "vue";
 import { Head, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { useForm } from "@inertiajs/vue3";
+import CreateDepartmentModal from "./Partials/CreateDepartmentModal.vue";
 
 const props = defineProps({
     departments: Array,
@@ -150,6 +158,7 @@ const props = defineProps({
 });
 
 const form = useForm({});
+const showCreateModal = ref(false);
 
 const deleteDepartment = (department) => {
     if (confirm(`Are you sure you want to delete ${department.name}?`)) {

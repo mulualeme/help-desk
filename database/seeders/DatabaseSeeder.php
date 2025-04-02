@@ -40,6 +40,11 @@ class DatabaseSeeder extends Seeder
         ]);
         $agent2->assignRole('agent');
 
+        // Create additional random agents
+        User::factory(5)->create()->each(function ($user) {
+            $user->assignRole('agent');
+        });
+
         // Create Customer Users
         $customer1 = User::create([
             'name' => 'Customer One',
@@ -59,5 +64,8 @@ class DatabaseSeeder extends Seeder
         User::factory(5)->create()->each(function ($user) {
             $user->assignRole('customer');
         });
+
+        // Seed departments and assign agents
+        $this->call(DepartmentSeeder::class);
     }
 }

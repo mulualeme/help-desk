@@ -67,7 +67,7 @@ class DepartmentController extends BaseController
         $department = Department::create($validated);
 
         return redirect()
-            ->route('departments.show', $department)
+            ->route('departments.index')
             ->with('success', 'Department created successfully.');
     }
 
