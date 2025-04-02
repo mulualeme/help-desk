@@ -4,9 +4,17 @@
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Edit {{ agent.name }}'s Role
-                </h2>
+                <Breadcrumb
+                    :items="[
+                        { label: 'Dashboard', href: route('dashboard') },
+                        { label: 'Agents', href: route('agents.index') },
+                        {
+                            label: agent.name,
+                            href: route('agents.show', agent.id),
+                        },
+                        { label: 'Edit Role' },
+                    ]"
+                />
             </div>
         </template>
 
@@ -102,6 +110,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Breadcrumb from "@/Components/Breadcrumb.vue";
 
 const props = defineProps({
     agent: Object,

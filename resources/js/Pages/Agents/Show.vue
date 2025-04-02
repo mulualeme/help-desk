@@ -5,41 +5,20 @@
         <template #header>
             <div class="flex justify-between items-center">
                 <div class="flex items-center">
-                    <h2
-                        class="font-semibold text-xl text-gray-800 leading-tight"
-                    >
-                        Agent Profile: {{ agent.name }}
-                    </h2>
-                    <span
-                        class="ml-4 px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                        :class="{
-                            'bg-green-100 text-green-800': hasRole(
-                                agent,
-                                'admin'
-                            ),
-                            'bg-blue-100 text-blue-800': hasRole(
-                                agent,
-                                'agent'
-                            ),
-                        }"
-                    >
-                        {{ getRoleName(agent) }}
-                    </span>
+                    <Breadcrumb
+                        :items="[
+                            { label: 'Agents', href: route('agents.index') },
+                            { label: agent.name },
+                        ]"
+                    />
                 </div>
                 <div class="flex space-x-2">
-                    <Link
+                    <PrimaryButton
                         v-if="can.edit_roles"
-                        :href="route('agents.edit', agent.id)"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                        @click="router.visit(route('agents.edit', agent.id))"
                     >
                         Change Role
-                    </Link>
-                    <Link
-                        :href="route('agents.index')"
-                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium"
-                    >
-                        Back to Agents
-                    </Link>
+                    </PrimaryButton>
                 </div>
             </div>
         </template>
@@ -381,9 +360,11 @@
 </template>
 
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import Breadcrumb from "@/Components/Breadcrumb.vue";
 import { formatDistance, format } from "date-fns";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     agent: Object,
@@ -391,17 +372,6 @@ const props = defineProps({
     activities: Array,
     can: Object,
 });
-
-const hasRole = (agent, roleName) => {
-    return agent.roles.some((role) => role.name === roleName);
-};
-
-const getRoleName = (agent) => {
-    if (hasRole(agent, "admin")) {
-        return "Admin";
-    }
-    return "Agent";
-};
 
 const formatDate = (dateString) => {
     if (!dateString) return "";

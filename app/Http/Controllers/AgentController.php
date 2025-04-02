@@ -36,7 +36,11 @@ class AgentController extends Controller
      */
     public function index()
     {
-        $agents = User::role(['agent', 'admin'])->with('roles')->get();
+        $agents = User::role('agent')
+            ->with('roles')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
         
         return Inertia::render('Agents/Index', [
             'agents' => $agents,
@@ -88,8 +92,8 @@ class AgentController extends Controller
      */
     public function edit(User $agent)
     {
-        // Ensure user has the agent or admin role
-        if (!$agent->hasRole(['agent', 'admin'])) {
+        // Ensure user has the agent role
+        if (!$agent->hasRole('agent')) {
             abort(404);
         }
         
@@ -110,8 +114,8 @@ class AgentController extends Controller
      */
     public function update(Request $request, User $agent)
     {
-        // Ensure user has the agent or admin role
-        if (!$agent->hasRole(['agent', 'admin'])) {
+        // Ensure user has the agent role
+        if (!$agent->hasRole('agent')) {
             abort(404);
         }
         
@@ -119,9 +123,8 @@ class AgentController extends Controller
             'role' => 'required|string|in:agent,admin',
         ]);
 
-        // Remove existing agent/admin roles and assign the new one
+        // Remove existing agent role and assign the new one
         $agent->removeRole('agent');
-        $agent->removeRole('admin');
         $agent->assignRole($request->role);
 
         return redirect()->route('agents.index')->with('success', 'Agent role updated successfully');
@@ -135,8 +138,8 @@ class AgentController extends Controller
      */
     public function destroy(User $agent)
     {
-        // Ensure user has the agent or admin role
-        if (!$agent->hasRole(['agent', 'admin'])) {
+        // Ensure user has the agent role
+        if (!$agent->hasRole('agent')) {
             abort(404);
         }
         
@@ -158,8 +161,8 @@ class AgentController extends Controller
      */
     public function show(User $agent)
     {
-        // Ensure user has the agent or admin role
-        if (!$agent->hasRole(['agent', 'admin'])) {
+        // Ensure user has the agent role
+        if (!$agent->hasRole('agent')) {
             abort(404);
         }
         

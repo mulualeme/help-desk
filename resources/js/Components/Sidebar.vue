@@ -10,6 +10,7 @@ import {
     ChevronFirst,
     ChevronLast,
     Users,
+    UserRound,
 } from "lucide-vue-next";
 
 const props = defineProps({
@@ -58,6 +59,12 @@ const navigation = computed(() => {
             href: "agents.index",
             icon: Users,
             permission: "manage agents",
+        },
+        {
+            name: "Customers",
+            href: "customers.index",
+            icon: UserRound,
+            permission: "view customers",
         },
     ];
 

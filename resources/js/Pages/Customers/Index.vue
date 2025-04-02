@@ -1,15 +1,15 @@
 <template>
-    <Head title="Agent Management" />
+    <Head title="Customers" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
-                <Breadcrumb :items="[{ label: 'Agents' }]" />
+                <Breadcrumb :items="[{ label: 'Customers' }]" />
                 <PrimaryButton
-                    v-if="can.invite"
-                    @click="showInviteModal = true"
+                    v-if="can.create"
+                    @click="$inertia.visit(route('customers.create'))"
                 >
-                    Invite Agent
+                    Add Customer
                 </PrimaryButton>
             </div>
         </template>
@@ -18,13 +18,12 @@
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <!-- Search and Filter Controls -->
                         <div class="mb-6 flex flex-col sm:flex-row gap-4">
                             <div class="w-full sm:w-1/2">
                                 <input
                                     v-model="search"
                                     type="text"
-                                    placeholder="Search agents..."
+                                    placeholder="Search customers..."
                                     class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                 />
                             </div>
@@ -106,52 +105,66 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th
+                                            scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
                                             Name
                                         </th>
                                         <th
+                                            scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
                                             Email
                                         </th>
                                         <th
+                                            scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
-                                            Created At
+                                            Created
                                         </th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                            scope="col"
+                                            class="relative px-6 py-3"
                                         >
-                                            Actions
+                                            <span class="sr-only">Actions</span>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody
                                     class="bg-white divide-y divide-gray-200"
                                 >
+                                    <tr v-if="filteredCustomers.length === 0">
+                                        <td
+                                            colspan="4"
+                                            class="px-6 py-4 text-center text-gray-500"
+                                        >
+                                            No customers found.
+                                        </td>
+                                    </tr>
                                     <tr
-                                        v-for="agent in filteredAgents"
-                                        :key="agent.id"
+                                        v-for="customer in filteredCustomers"
+                                        :key="customer.id"
+                                        @click="navigateToCustomer(customer)"
                                         class="hover:bg-gray-50 cursor-pointer"
-                                        @click="navigateToAgent(agent.id)"
                                     >
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div
                                                 class="text-sm font-medium text-gray-900"
                                             >
-                                                {{ agent.name }}
+                                                {{ customer.name }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-500">
-                                                {{ agent.email }}
+                                                {{ customer.email }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-500">
                                                 {{
-                                                    formatDate(agent.created_at)
+                                                    formatDate(
+                                                        customer.created_at
+                                                    )
                                                 }}
                                             </div>
                                         </td>
@@ -160,32 +173,24 @@
                                             @click.stop
                                         >
                                             <Link
-                                                v-if="can.edit_roles"
+                                                v-if="can.edit"
                                                 :href="
                                                     route(
-                                                        'agents.edit',
-                                                        agent.id
+                                                        'customers.edit',
+                                                        customer.id
                                                     )
                                                 "
                                                 class="text-indigo-600 hover:text-indigo-900"
                                             >
-                                                Change Role
+                                                Edit
                                             </Link>
                                             <button
                                                 v-if="can.delete"
-                                                @click="confirmDelete(agent)"
-                                                class="text-red-600 hover:text-red-900 ml-2"
+                                                @click="confirmDelete(customer)"
+                                                class="text-red-600 hover:text-red-900 ml-3"
                                             >
                                                 Delete
                                             </button>
-                                        </td>
-                                    </tr>
-                                    <tr v-if="filteredAgents.length === 0">
-                                        <td
-                                            colspan="4"
-                                            class="px-6 py-4 text-center text-sm text-gray-500"
-                                        >
-                                            No agents found.
                                         </td>
                                     </tr>
                                 </tbody>
@@ -194,179 +199,106 @@
 
                         <Pagination
                             v-if="!search && sortOrder === 'newest'"
-                            :links="agents.links"
+                            :links="customers.links"
                             :meta="{
-                                from: agents.from,
-                                to: agents.to,
-                                total: agents.total,
+                                from: customers.from,
+                                to: customers.to,
+                                total: customers.total,
                             }"
-                            itemName="agents"
+                            itemName="customers"
                         />
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Invite Agent Modal -->
-        <Modal :show="showInviteModal" @close="closeInviteModal" maxWidth="md">
-            <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">
-                    Invite Agent
-                </h2>
-
-                <form @submit.prevent="submitInvite">
-                    <div class="mb-4">
-                        <InputLabel for="name" value="Name" />
-                        <TextInput
-                            id="name"
-                            type="text"
-                            class="mt-1 block w-full"
-                            v-model="form.name"
-                            required
-                            autofocus
-                        />
-                        <InputError class="mt-2" :message="form.errors.name" />
-                    </div>
-
-                    <div class="mb-4">
-                        <InputLabel for="email" value="Email" />
-                        <TextInput
-                            id="email"
-                            type="email"
-                            class="mt-1 block w-full"
-                            v-model="form.email"
-                            required
-                        />
-                        <InputError class="mt-2" :message="form.errors.email" />
-                    </div>
-
-                    <div class="flex items-center justify-end mt-6">
-                        <button
-                            type="button"
-                            class="px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150 mr-3"
-                            @click="closeInviteModal"
-                            :disabled="form.processing"
-                        >
-                            Cancel
-                        </button>
-                        <PrimaryButton
-                            type="submit"
-                            :class="{ 'opacity-25': form.processing }"
-                            :disabled="form.processing"
-                        >
-                            Send Invitation
-                        </PrimaryButton>
-                    </div>
-                </form>
-            </div>
-        </Modal>
     </AuthenticatedLayout>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
-import { Head, Link, useForm, router } from "@inertiajs/vue3";
+import { Head, Link, router, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import Modal from "@/Components/Modal.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
-import InputError from "@/Components/InputError.vue";
 import Pagination from "@/Components/Pagination.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
-import Dropdown from "@/Components/Dropdown.vue";
 import { format } from "date-fns";
+import Dropdown from "@/Components/Dropdown.vue";
 
 const props = defineProps({
-    agents: Object,
+    customers: Object,
     can: Object,
 });
 
-const showInviteModal = ref(false);
-const deleteForm = useForm({});
-const form = useForm({
-    name: "",
-    email: "",
-});
 const search = ref("");
+const deleteForm = useForm({});
 const sortOrder = ref("newest");
 
-const sortOrderLabel = computed(() => {
-    const labels = {
-        newest: "Newest First",
-        oldest: "Oldest First",
-        "a-z": "A-Z",
-        "z-a": "Z-A",
-    };
-    return labels[sortOrder.value];
-});
+const filteredCustomers = computed(() => {
+    if (!props.customers.data) return [];
 
-const filteredAgents = computed(() => {
-    // First, filter the agents by search term
-    let result = [...props.agents.data];
+    let filtered = props.customers.data.filter((customer) => {
+        const searchLower = search.value.toLowerCase();
+        return (
+            customer.name.toLowerCase().includes(searchLower) ||
+            customer.email.toLowerCase().includes(searchLower)
+        );
+    });
 
-    if (search.value) {
-        result = result.filter((agent) => {
-            return (
-                agent.name.toLowerCase().includes(search.value.toLowerCase()) ||
-                agent.email.toLowerCase().includes(search.value.toLowerCase())
-            );
-        });
-    }
-
-    // Then, sort the filtered results
+    // Apply sorting
     switch (sortOrder.value) {
-        case "a-z":
-            result.sort((a, b) => a.name.localeCompare(b.name));
-            break;
-        case "z-a":
-            result.sort((a, b) => b.name.localeCompare(a.name));
-            break;
         case "oldest":
-            result.sort(
+            filtered.sort(
                 (a, b) => new Date(a.created_at) - new Date(b.created_at)
             );
             break;
         case "newest":
-        default:
-            result.sort(
+            filtered.sort(
                 (a, b) => new Date(b.created_at) - new Date(a.created_at)
             );
             break;
+        case "a-z":
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        case "z-a":
+            filtered.sort((a, b) => b.name.localeCompare(a.name));
+            break;
     }
 
-    return result;
+    return filtered;
 });
 
-const closeInviteModal = () => {
-    showInviteModal.value = false;
-    form.reset();
-};
-
-const submitInvite = () => {
-    form.post(route("agents.store"), {
-        onSuccess: () => {
-            closeInviteModal();
-        },
-    });
-};
-
-const confirmDelete = (agent) => {
-    if (confirm(`Are you sure you want to delete ${agent.name}?`)) {
-        deleteForm.delete(route("agents.destroy", agent.id));
-    }
-};
-
-const navigateToAgent = (id) => {
-    router.visit(route("agents.show", id), {
+const navigateToCustomer = (id) => {
+    router.visit(route("customers.show", id), {
         preserveState: true,
         preserveScroll: true,
-        only: ["agent", "performance", "activities"],
     });
+};
+
+const confirmDelete = (customer) => {
+    if (confirm(`Are you sure you want to delete ${customer.name}?`)) {
+        deleteForm.delete(route("customers.destroy", customer.id));
+    }
 };
 
 const formatDate = (dateString) => {
     if (!dateString) return "";
-    return format(new Date(dateString), "MMM d, yyyy");
+
+    const date = new Date(dateString);
+    return format(date, "MMM d, yyyy");
 };
+
+const sortOrderLabel = computed(() => {
+    switch (sortOrder.value) {
+        case "newest":
+            return "Newest First";
+        case "oldest":
+            return "Oldest First";
+        case "a-z":
+            return "A-Z";
+        case "z-a":
+            return "Z-A";
+        default:
+            return "Sort";
+    }
+});
 </script>

@@ -35,7 +35,10 @@ class DepartmentController extends BaseController
     public function index()
     {
         return Inertia::render('Departments/Index', [
-            'departments' => Department::withCount('agents')->get(),
+            'departments' => Department::withCount('agents')
+                ->orderBy('created_at', 'desc')
+                ->paginate(10)
+                ->withQueryString(),
             'can' => [
                 'create' => Auth::user()->can('create department'),
                 'edit' => Auth::user()->can('edit department'),
