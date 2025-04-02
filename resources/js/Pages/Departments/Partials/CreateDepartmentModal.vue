@@ -7,6 +7,7 @@ import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import { useToast } from "@/Composables/useToast";
 
 const props = defineProps({
     show: {
@@ -16,6 +17,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["close"]);
+const toast = useToast();
 
 const form = useForm({
     name: "",
@@ -30,8 +32,12 @@ const submit = () => {
     form.post(route("departments.store"), {
         preserveScroll: true,
         onSuccess: () => {
+            toast.success("Department created successfully");
             form.reset();
             emit("close");
+        },
+        onError: () => {
+            toast.error("Failed to create department");
         },
         onFinish: () => {
             processing.value = false;

@@ -5,10 +5,13 @@ import { usePage } from "@inertiajs/vue3";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link } from "@inertiajs/vue3";
+import ToastContainer from "@/Components/ToastContainer.vue";
+import { setToastContainer } from "@/utils/toast";
 
 const showingNavigationDropdown = ref(false);
 const page = usePage();
 const isSidebarOpen = ref(true);
+const toastContainerRef = ref(null);
 
 const hasPermission = (permission) => {
     return page.props.auth.user.permissions.includes(permission);
@@ -19,11 +22,19 @@ onMounted(() => {
     if (savedState !== null) {
         isSidebarOpen.value = savedState === "true";
     }
+
+    // Set the toast container reference
+    if (toastContainerRef.value) {
+        setToastContainer(toastContainerRef.value);
+    }
 });
 </script>
 
 <template>
     <div>
+        <!-- Toast Container -->
+        <ToastContainer ref="toastContainerRef" />
+
         <div class="min-h-screen bg-gray-100">
             <!-- Mobile Navigation -->
             <nav class="border-b border-gray-100 bg-white lg:hidden">

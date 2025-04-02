@@ -105,18 +105,21 @@
 
 <script setup>
 import { onMounted } from "vue";
-import { useForm, Head, Link } from "@inertiajs/vue3";
+import { useForm, Head, Link, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
+import { useToast } from "@/Composables/useToast";
 
 const props = defineProps({
     agent: Object,
     roles: Array,
 });
 
+const page = usePage();
+const toast = useToast();
 const form = useForm({
     role: "",
 });
@@ -127,6 +130,14 @@ onMounted(() => {
         form.role = "admin";
     } else {
         form.role = "agent";
+    }
+
+    // Display flash messages if present
+    if (page.props.flash?.success) {
+        toast.success(page.props.flash.success);
+    }
+    if (page.props.flash?.error) {
+        toast.error(page.props.flash.error);
     }
 });
 
@@ -139,6 +150,17 @@ const formatRoleName = (roleName) => {
 };
 
 const submit = () => {
-    form.put(route("agents.update", props.agent.id));
+    form.put(route("agents.update", props.agent.id), {
+        onSuccess: () => {
+            toast.success(
+                `${props.agent.name}'s role was updated to ${formatRoleName(
+                    form.role
+                )}`
+            );
+        },
+        onError: (errors) => {
+            toast.error("There was an error updating the role");
+        },
+    });
 };
 </script>

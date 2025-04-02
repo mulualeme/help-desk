@@ -1,0 +1,77 @@
+<template>
+    <div class="toast-container">
+        <TransitionGroup name="toast">
+            <ToastNotification
+                v-for="toast in toasts"
+                :key="toast.id"
+                :message="toast.message"
+                :type="toast.type"
+                :duration="toast.duration"
+                :onDismiss="() => removeToast(toast.id)"
+            />
+        </TransitionGroup>
+    </div>
+</template>
+
+<script setup>
+import { ref, onMounted, onUnmounted } from "vue";
+import ToastNotification from "./ToastNotification.vue";
+import { usePage } from "@inertiajs/vue3";
+import { watch } from "vue";
+
+const toasts = ref([]);
+let toastId = 0;
+
+const addToast = (message, type = "success", duration = 5000) => {
+    const id = toastId++;
+    toasts.value.push({ id, message, type, duration });
+
+    return id;
+};
+
+const removeToast = (id) => {
+    toasts.value = toasts.value.filter((toast) => toast.id !== id);
+};
+
+// Watch for flash messages from Laravel
+onMounted(() => {
+    watch(
+        () => usePage().props.flash,
+        (newFlash) => {
+            if (!newFlash) return;
+
+            if (newFlash.success) {
+                addToast(newFlash.success, "success");
+            }
+            if (newFlash.error) {
+                addToast(newFlash.error, "error");
+            }
+            if (newFlash.info) {
+                addToast(newFlash.info, "info");
+            }
+        },
+        { deep: true, immediate: true }
+    );
+});
+
+// Expose the methods to be used globally
+defineExpose({
+    addToast,
+    removeToast,
+});
+</script>
+
+<style scoped>
+.toast-enter-active,
+.toast-leave-active {
+    transition: all 0.3s ease;
+}
+.toast-enter-from {
+    transform: translateY(50px);
+    opacity: 0;
+}
+.toast-leave-to {
+    transform: translateY(-50px);
+    opacity: 0;
+}
+</style>
