@@ -48,6 +48,19 @@ class RolesandPermissionSeeder extends Seeder
         Permission::create(['name' => 'edit customers']);
         Permission::create(['name' => 'delete customers']);
 
+        // Knowledge Base category permissions
+        Permission::create(['name' => 'create kb category']);
+        Permission::create(['name' => 'edit kb category']);
+        Permission::create(['name' => 'delete kb category']);
+        Permission::create(['name' => 'view kb category']);
+
+        // Knowledge Base article permissions
+        Permission::create(['name' => 'create kb article']);
+        Permission::create(['name' => 'edit kb article']);
+        Permission::create(['name' => 'delete kb article']);
+        Permission::create(['name' => 'view kb article']);
+        Permission::create(['name' => 'publish kb article']);
+
         // Create roles and assign permissions
         $adminRole = Role::create(['name' => 'admin']);
         $agentRole = Role::create(['name' => 'agent']);
@@ -76,7 +89,16 @@ class RolesandPermissionSeeder extends Seeder
             'view customers',
             'create customers',
             'edit customers',
-            'delete customers'
+            'delete customers',
+            'create kb category',
+            'edit kb category',
+            'delete kb category',
+            'view kb category',
+            'create kb article',
+            'edit kb article',
+            'delete kb article',
+            'view kb article',
+            'publish kb article'
         ]);
 
         // Agent permissions
@@ -87,14 +109,20 @@ class RolesandPermissionSeeder extends Seeder
             'close ticket',
             'reopen ticket',
             'comment on ticket',
-            'view agents'
+            'view agents',
+            'view kb category',
+            'view kb article',
+            'create kb article',
+            'edit kb article'
         ]);
 
         // Customer permissions
         $customerRole->givePermissionTo([
             'create ticket',
             'view ticket',
-            'comment on ticket'
+            'comment on ticket',
+            'view kb category',
+            'view kb article'
         ]);
     }
 }

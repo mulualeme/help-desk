@@ -123,6 +123,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import { useToast } from "@/Composables/useToast";
 
 const props = defineProps({
     departmentId: {
@@ -140,6 +141,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["agentAssigned", "agentRemoved"]);
+const toast = useToast();
 
 const showModal = ref(false);
 const selectedAgent = ref("");
@@ -156,6 +158,7 @@ const fetchAvailableAgents = async () => {
         availableAgents.value = await response.json();
     } catch (error) {
         console.error("Error fetching available agents:", error);
+        toast.error("Error fetching available agents");
     }
 };
 
@@ -173,10 +176,23 @@ const closeModal = () => {
 
 const assignAgent = () => {
     form.user_id = selectedAgent.value;
+
+    // Find the agent name for the toast message
+    const agentName =
+        availableAgents.value.find(
+            (agent) => agent.id === parseInt(selectedAgent.value)
+        )?.name || "Agent";
+
     form.post(route("departments.assign-agent", props.departmentId), {
         onSuccess: () => {
             closeModal();
             emit("agentAssigned");
+            toast.success(
+                `${agentName} was assigned to the department successfully`
+            );
+        },
+        onError: () => {
+            toast.error("There was an error assigning the agent");
         },
     });
 };
@@ -196,6 +212,14 @@ const removeAgent = (agent) => {
                 preserveScroll: true,
                 onSuccess: () => {
                     emit("agentRemoved");
+                    toast.success(
+                        `${agent.name} was removed from the department successfully`
+                    );
+                },
+                onError: () => {
+                    toast.error(
+                        `There was an error removing ${agent.name} from the department`
+                    );
                 },
             }
         );

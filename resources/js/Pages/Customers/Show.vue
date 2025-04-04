@@ -127,15 +127,30 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from "@inertiajs/vue3";
+import { Head, Link, router, usePage } from "@inertiajs/vue3";
+import { onMounted } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import { useToast } from "@/Composables/useToast";
 
 const props = defineProps({
     customer: Object,
     tickets: Array,
     can: Object,
+});
+
+const page = usePage();
+const toast = useToast();
+
+// Display flash messages if present
+onMounted(() => {
+    if (page.props.flash?.success) {
+        toast.success(page.props.flash.success);
+    }
+    if (page.props.flash?.error) {
+        toast.error(page.props.flash.error);
+    }
 });
 
 const formatDate = (dateString) => {

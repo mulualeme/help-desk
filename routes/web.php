@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\KnowledgeBaseCategoryController;
+use App\Http\Controllers\KnowledgeBaseArticleController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -49,6 +51,11 @@ Route::middleware(['auth'])->group(function () {
     
     // Customer management routes
     Route::resource('customers', CustomerController::class);
+    
+    // Knowledge Base routes
+    Route::get('/knowledge-base', [KnowledgeBaseCategoryController::class, 'index'])->name('knowledge-base.index');
+    Route::resource('knowledge-base/categories', KnowledgeBaseCategoryController::class, ['as' => 'knowledge-base']);
+    Route::resource('knowledge-base/articles', KnowledgeBaseArticleController::class, ['as' => 'knowledge-base']);
 });
 
 require __DIR__.'/auth.php';

@@ -215,23 +215,35 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { Head, Link, router, useForm } from "@inertiajs/vue3";
+import { ref, computed, onMounted } from "vue";
+import { Head, Link, router, useForm, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Pagination from "@/Components/Pagination.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import { format } from "date-fns";
 import Dropdown from "@/Components/Dropdown.vue";
+import toast from "@/utils/toast";
 
 const props = defineProps({
     customers: Object,
     can: Object,
 });
 
+const page = usePage();
 const search = ref("");
 const deleteForm = useForm({});
 const sortOrder = ref("newest");
+
+// Display flash messages as toasts
+onMounted(() => {
+    if (page.props.flash?.success) {
+        toast.success(page.props.flash.success);
+    }
+    if (page.props.flash?.error) {
+        toast.error(page.props.flash.error);
+    }
+});
 
 const filteredCustomers = computed(() => {
     if (!props.customers.data) return [];
@@ -276,7 +288,14 @@ const navigateToCustomer = (customer) => {
 
 const confirmDelete = (customer) => {
     if (confirm(`Are you sure you want to delete ${customer.name}?`)) {
-        deleteForm.delete(route("customers.destroy", customer.id));
+        deleteForm.delete(route("customers.destroy", customer.id), {
+            onSuccess: () => {
+                toast.success(`${customer.name} was deleted successfully`);
+            },
+            onError: (error) => {
+                toast.error(error);
+            },
+        });
     }
 };
 

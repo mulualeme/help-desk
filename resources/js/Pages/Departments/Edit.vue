@@ -42,6 +42,7 @@ import { useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import DepartmentForm from "./Partials/DepartmentForm.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
+import { useToast } from "@/Composables/useToast";
 
 const props = defineProps({
     department: Object,
@@ -53,7 +54,16 @@ const form = useForm({
     is_active: props.department.is_active,
 });
 
+const toast = useToast();
+
 const submitForm = () => {
-    form.patch(route("departments.update", props.department.id));
+    form.patch(route("departments.update", props.department.id), {
+        onSuccess: () => {
+            toast.success("Department updated successfully");
+        },
+        onError: () => {
+            toast.error("Failed to update department");
+        },
+    });
 };
 </script>

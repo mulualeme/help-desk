@@ -323,6 +323,7 @@ import Pagination from "@/Components/Pagination.vue";
 import { useForm } from "@inertiajs/vue3";
 import CreateDepartmentModal from "./Partials/CreateDepartmentModal.vue";
 import Dropdown from "@/Components/Dropdown.vue";
+import { useToast } from "@/Composables/useToast";
 
 const props = defineProps({
     departments: Object,
@@ -334,6 +335,7 @@ const showCreateModal = ref(false);
 const search = ref("");
 const statusFilter = ref("all");
 const sortOrder = ref("newest");
+const toast = useToast();
 
 const statusFilterLabel = computed(() => {
     const labels = {
@@ -407,7 +409,14 @@ const filteredDepartments = computed(() => {
 
 const deleteDepartment = (department) => {
     if (confirm(`Are you sure you want to delete ${department.name}?`)) {
-        form.delete(route("departments.destroy", department.id));
+        form.delete(route("departments.destroy", department.id), {
+            onSuccess: () => {
+                toast.success(`${department.name} was deleted successfully`);
+            },
+            onError: (error) => {
+                toast.error(error);
+            },
+        });
     }
 };
 </script>

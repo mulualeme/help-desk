@@ -264,8 +264,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { Head, Link, useForm, router } from "@inertiajs/vue3";
+import { ref, computed, onMounted } from "vue";
+import { Head, Link, useForm, router, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Modal from "@/Components/Modal.vue";
@@ -276,12 +276,14 @@ import Pagination from "@/Components/Pagination.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import { format } from "date-fns";
+import toast from "@/utils/toast";
 
 const props = defineProps({
     agents: Object,
     can: Object,
 });
 
+const page = usePage();
 const showInviteModal = ref(false);
 const deleteForm = useForm({});
 const form = useForm({
@@ -290,6 +292,16 @@ const form = useForm({
 });
 const search = ref("");
 const sortOrder = ref("newest");
+
+// Display flash messages as toasts
+onMounted(() => {
+    if (page.props.flash?.success) {
+        toast.success(page.props.flash.success);
+    }
+    if (page.props.flash?.error) {
+        toast.error(page.props.flash.error);
+    }
+});
 
 const sortOrderLabel = computed(() => {
     const labels = {
@@ -347,13 +359,24 @@ const submitInvite = () => {
     form.post(route("agents.store"), {
         onSuccess: () => {
             closeInviteModal();
+            toast.success("Agent invitation has been sent successfully");
+        },
+        onError: (errors) => {
+            toast.error("There was an error sending the invitation");
         },
     });
 };
 
 const confirmDelete = (agent) => {
     if (confirm(`Are you sure you want to delete ${agent.name}?`)) {
-        deleteForm.delete(route("agents.destroy", agent.id));
+        deleteForm.delete(route("agents.destroy", agent.id), {
+            onSuccess: () => {
+                toast.success(`${agent.name} was deleted successfully`);
+            },
+            onError: (error) => {
+                toast.error(error);
+            },
+        });
     }
 };
 

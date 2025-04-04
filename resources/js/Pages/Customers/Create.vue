@@ -90,13 +90,18 @@
 </template>
 
 <script setup>
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
+import { onMounted } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
+import { useToast } from "@/Composables/useToast";
+
+const page = usePage();
+const toast = useToast();
 
 const form = useForm({
     name: "",
@@ -104,7 +109,24 @@ const form = useForm({
     password: "",
 });
 
+// Display flash messages if present
+onMounted(() => {
+    if (page.props.flash?.success) {
+        toast.success(page.props.flash.success);
+    }
+    if (page.props.flash?.error) {
+        toast.error(page.props.flash.error);
+    }
+});
+
 const submit = () => {
-    form.post(route("customers.store"));
+    form.post(route("customers.store"), {
+        onSuccess: () => {
+            toast.success(`Customer ${form.name} was created successfully`);
+        },
+        onError: () => {
+            toast.error("There was an error creating the customer");
+        },
+    });
 };
 </script>
