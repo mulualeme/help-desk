@@ -115,6 +115,12 @@ onMounted(() => {
                         >
                             Departments
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('knowledge-base.index')"
+                            :active="route().current('knowledge-base.*')"
+                        >
+                            Knowledge Base
+                        </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->

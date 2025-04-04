@@ -11,6 +11,7 @@ import {
     ChevronLast,
     Users,
     UserRound,
+    BookOpen,
 } from "lucide-vue-next";
 
 const props = defineProps({
@@ -65,6 +66,12 @@ const navigation = computed(() => {
             href: "customers.index",
             icon: UserRound,
             permission: "view customers",
+        },
+        {
+            name: "Knowledge Base",
+            href: "knowledge-base.index",
+            icon: BookOpen,
+            permission: null, // Always visible or use appropriate permission
         },
     ];
 

@@ -14,17 +14,10 @@ return new class extends Migration
         Schema::create('knowledge_base_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description')->nullable();
             $table->string('slug')->unique();
-            $table->boolean('is_active')->default(true);
-            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->text('description')->nullable();
             $table->integer('order')->default(0);
             $table->timestamps();
-            
-            $table->foreign('parent_id')
-                ->references('id')
-                ->on('knowledge_base_categories')
-                ->onDelete('cascade');
         });
     }
 

@@ -67,5 +67,8 @@ class DatabaseSeeder extends Seeder
 
         // Seed departments and assign agents
         $this->call(DepartmentSeeder::class);
+        
+        // Seed knowledge base categories and articles
+        $this->call(KnowledgeBaseSeeder::class);
     }
 }

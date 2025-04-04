@@ -17,6 +17,9 @@
                                 !link.active,
                         }"
                         v-html="link.label"
+                        :preserve-scroll="true"
+                        :preserve-state="true"
+                        :only="[itemName]"
                     />
                     <span
                         v-else

@@ -21,7 +21,6 @@ return new class extends Migration
             $table->unsignedBigInteger('author_id');
             $table->boolean('is_published')->default(false);
             $table->timestamp('published_at')->nullable();
-            $table->integer('views')->default(0);
             $table->boolean('featured')->default(false);
             $table->timestamps();
             
