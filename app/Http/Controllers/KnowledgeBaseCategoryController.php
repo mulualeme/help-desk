@@ -36,10 +36,12 @@ class KnowledgeBaseCategoryController extends Controller
             }
             
             // Filter articles by published status
-            if ($request->input('status') === 'published') {
-                $query->where('is_published', true);
-            } elseif ($request->input('status') === 'draft') {
-                $query->where('is_published', false);
+            if ($request->filled('status')) {
+                if ($request->input('status') === 'published') {
+                    $query->where('is_published', true);
+                } elseif ($request->input('status') === 'draft') {
+                    $query->where('is_published', false);
+                }
             }
         }])
         ->orderBy('order');

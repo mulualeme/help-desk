@@ -32,19 +32,53 @@ class DepartmentController extends BaseController
     /**
      * Display a listing of the departments.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = Department::withCount('agents');
+        
+        // Handle search - modified to only search by name
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $query->where('name', 'like', '%' . $searchTerm . '%');
+        }
+        
+        // Handle status filter
+        if ($request->filled('status')) {
+            $status = $request->input('status');
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+        
+        // Handle sorting
+        $sortOrder = $request->input('sort', 'newest');
+        switch ($sortOrder) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'a-z':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'z-a':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+        
         return Inertia::render('Departments/Index', [
-            'departments' => Department::withCount('agents')
-                ->orderBy('created_at', 'desc')
-                ->paginate(10)
-                ->withQueryString(),
+            'departments' => $query->paginate(10)->withQueryString(),
             'can' => [
                 'create' => Auth::user()->can('create department'),
                 'edit' => Auth::user()->can('edit department'),
                 'delete' => Auth::user()->can('delete department'),
                 'view' => Auth::user()->can('view department'),
             ],
+            'filters' => $request->only(['search', 'status', 'sort']),
         ]);
     }
 
