@@ -23,6 +23,11 @@
                         Edit Category
                     </Link>
                     <Link
+                        v-if="
+                            $page.props.auth.user.permissions.includes(
+                                'create kb article'
+                            )
+                        "
                         :href="
                             route('knowledge-base.articles.create', {
                                 category_id: category.id,
@@ -207,7 +212,14 @@
                         class="bg-white shadow-sm sm:rounded-lg p-6 text-center text-gray-500"
                     >
                         No articles in this category yet.
-                        <div class="mt-4">
+                        <div
+                            class="mt-4"
+                            v-if="
+                                $page.props.auth.user.permissions.includes(
+                                    'create kb article'
+                                )
+                            "
+                        >
                             <Link
                                 :href="
                                     route('knowledge-base.articles.create', {

@@ -30,16 +30,18 @@ class KnowledgeBaseCategoryController extends Controller
         $query = KnowledgeBaseCategory::with(['articles' => function($query) use ($request) {
             $query->with('author');
             
-            // Filter articles by title if provided
+            // Filter articles by article name if provided
             if ($request->filled('title')) {
                 $query->where('title', 'like', '%' . $request->input('title') . '%');
             }
             
             // Filter articles by published status
-            if ($request->input('status') === 'published') {
-                $query->where('is_published', true);
-            } elseif ($request->input('status') === 'draft') {
-                $query->where('is_published', false);
+            if ($request->filled('status')) {
+                if ($request->input('status') === 'published') {
+                    $query->where('is_published', true);
+                } elseif ($request->input('status') === 'draft') {
+                    $query->where('is_published', false);
+                }
             }
         }])
         ->orderBy('order');
@@ -52,6 +54,13 @@ class KnowledgeBaseCategoryController extends Controller
             $categories->setCollection(
                 $categories->getCollection()->filter(function ($category) {
                     return $category->articles->count() > 0;
+                })
+            );
+            
+            // Rearrange categories based on number of matching articles (most matches first)
+            $categories->setCollection(
+                $categories->getCollection()->sortByDesc(function ($category) {
+                    return $category->articles->count();
                 })
             );
         }

@@ -34,13 +34,38 @@ class AgentController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $agents = User::role('agent')
-            ->with('roles')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->withQueryString();
+        $query = User::role('agent')->with('roles');
+        
+        // Handle search
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('email', 'like', '%' . $searchTerm . '%');
+            });
+        }
+        
+        // Handle sorting
+        $sortOrder = $request->input('sort', 'newest');
+        switch ($sortOrder) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'a-z':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'z-a':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+        
+        $agents = $query->paginate(10)->withQueryString();
         
         return Inertia::render('Agents/Index', [
             'agents' => $agents,
@@ -48,7 +73,8 @@ class AgentController extends Controller
                 'invite' => Auth::user()->can('invite agents'),
                 'edit_roles' => Auth::user()->can('edit agent roles'),
                 'delete' => Auth::user()->can('delete agents'),
-            ]
+            ],
+            'filters' => $request->only(['search', 'sort']),
         ]);
     }
 

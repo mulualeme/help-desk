@@ -198,31 +198,6 @@ const assignAgent = () => {
 };
 
 const removeAgent = (agent) => {
-    if (
-        confirm(
-            `Are you sure you want to remove ${agent.name} from this department?`
-        )
-    ) {
-        form.delete(
-            route("departments.remove-agent", {
-                department: props.departmentId,
-                user: agent.id,
-            }),
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    emit("agentRemoved");
-                    toast.success(
-                        `${agent.name} was removed from the department successfully`
-                    );
-                },
-                onError: () => {
-                    toast.error(
-                        `There was an error removing ${agent.name} from the department`
-                    );
-                },
-            }
-        );
-    }
+    emit("agentRemoved", agent);
 };
 </script>
