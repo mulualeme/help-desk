@@ -152,8 +152,27 @@
                                                     article.created_at
                                             )
                                         }}</span>
-                                        <span class="mx-1">·</span>
                                         <span
+                                            class="mx-1"
+                                            v-if="
+                                                $page.props.auth.user.permissions.includes(
+                                                    'create kb article'
+                                                ) ||
+                                                $page.props.auth.user.permissions.includes(
+                                                    'edit kb article'
+                                                )
+                                            "
+                                            >·</span
+                                        >
+                                        <span
+                                            v-if="
+                                                $page.props.auth.user.permissions.includes(
+                                                    'create kb article'
+                                                ) ||
+                                                $page.props.auth.user.permissions.includes(
+                                                    'edit kb article'
+                                                )
+                                            "
                                             class="px-2 py-0.5 rounded-full text-xs capitalize"
                                             :class="
                                                 article.is_published
