@@ -80,7 +80,7 @@ const deleteForm = useForm({});
 const isLoading = ref(false);
 const filters = ref({
     search: props.filters?.search || "",
-    sort: props.filters?.sort || "newest",
+    sort: "newest",
 });
 
 // Display flash messages as toasts

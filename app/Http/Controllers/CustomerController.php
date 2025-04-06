@@ -31,15 +31,44 @@ class CustomerController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $customers = User::role('customer')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->withQueryString();
+        // Start with a base query
+        $query = User::role('customer');
+        
+        // Apply search filter if provided
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $query->where('name', 'like', "%{$searchTerm}%");
+        }
+        
+        // Apply sorting
+        $sort = $request->input('sort', 'newest');
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'a-z':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'z-a':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+        
+        // Get paginated results
+        $customers = $query->paginate(10)->withQueryString();
         
         return Inertia::render('Customers/Index', [
             'customers' => $customers,
+            'filters' => [
+                'search' => $request->input('search', ''),
+                'sort' => $sort,
+            ],
             'can' => [
                 'create' => Auth::user()->can('create customers'),
                 'edit' => Auth::user()->can('edit customers'),
