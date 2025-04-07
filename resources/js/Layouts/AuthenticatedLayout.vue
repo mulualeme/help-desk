@@ -116,6 +116,13 @@ onMounted(() => {
                             Departments
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
+                            v-if="hasPermission('view sla')"
+                            :href="route('slas.index')"
+                            :active="route().current('slas.*')"
+                        >
+                            SLAs
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
                             :href="route('knowledge-base.index')"
                             :active="route().current('knowledge-base.*')"
                         >

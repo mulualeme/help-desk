@@ -48,6 +48,12 @@ class RolesandPermissionSeeder extends Seeder
         Permission::create(['name' => 'edit customers']);
         Permission::create(['name' => 'delete customers']);
 
+        // SLA permissions
+        Permission::create(['name' => 'view sla']);
+        Permission::create(['name' => 'create sla']);
+        Permission::create(['name' => 'edit sla']);
+        Permission::create(['name' => 'delete sla']);
+
         // Knowledge Base category permissions
         Permission::create(['name' => 'create kb category']);
         Permission::create(['name' => 'edit kb category']);
@@ -90,6 +96,10 @@ class RolesandPermissionSeeder extends Seeder
             'create customers',
             'edit customers',
             'delete customers',
+            'view sla',
+            'create sla',
+            'edit sla',
+            'delete sla',
             'create kb category',
             'edit kb category',
             'delete kb category',
@@ -110,6 +120,7 @@ class RolesandPermissionSeeder extends Seeder
             'reopen ticket',
             'comment on ticket',
             'view agents',
+            'view sla',
             'view kb category',
             'view kb article',
             'create kb article',
