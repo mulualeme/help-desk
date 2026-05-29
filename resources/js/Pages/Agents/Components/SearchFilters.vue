@@ -1,84 +1,97 @@
 <template>
-    <div class="mb-6 flex flex-col sm:flex-row gap-4">
-        <div class="w-full sm:w-1/2 flex">
-            <input
-                v-model="filters.search"
-                @keyup.enter="applyFilters"
-                type="text"
-                placeholder="Search agents by name or email..."
-                class="w-full px-4 py-2 border border-gray-300 rounded-l-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-            <PrimaryButton @click="applyFilters" class="rounded-l-none">
-                Search
-            </PrimaryButton>
-        </div>
-        <div class="flex gap-2">
-            <Dropdown width="48">
-                <template #trigger>
-                    <button
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-medium text-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        <span>Sort: Newest First</span>
-                        <svg
-                            class="ml-2 -mr-0.5 h-4 w-4"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                    </button>
-                </template>
+    <div
+        class="bg-white overflow-visible shadow-sm sm:rounded-lg mb-6 p-6"
+        style="position: relative; z-index: 30"
+    >
+        <div class="flex flex-wrap gap-4 items-end">
+            <!-- Search -->
+            <div class="w-full md:w-1/3">
+                <InputLabel for="search" value="Search Agents" />
+                <div class="mt-1 flex">
+                    <TextInput
+                        id="search"
+                        v-model="filters.search"
+                        type="text"
+                        class="block w-full rounded-r-none"
+                        placeholder="Search by name or email..."
+                        @keyup.enter="applyFilters"
+                    />
+                    <PrimaryButton @click="applyFilters" class="rounded-l-none">
+                        Search
+                    </PrimaryButton>
+                </div>
+            </div>
 
-                <template #content>
-                    <div class="p-1">
-                        <button
-                            @click="updateSortOrder('newest')"
-                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-md bg-gray-100"
-                        >
-                            Newest First
-                        </button>
-                        <button
-                            @click="updateSortOrder('oldest')"
-                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-md"
-                            :class="{
-                                'bg-gray-100': filters.sort === 'oldest',
-                            }"
-                        >
-                            Oldest First
-                        </button>
-                        <button
-                            @click="updateSortOrder('a-z')"
-                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-md"
-                            :class="{
-                                'bg-gray-100': filters.sort === 'a-z',
-                            }"
-                        >
-                            A-Z
-                        </button>
-                        <button
-                            @click="updateSortOrder('z-a')"
-                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-md"
-                            :class="{
-                                'bg-gray-100': filters.sort === 'z-a',
-                            }"
-                        >
-                            Z-A
-                        </button>
-                    </div>
-                </template>
-            </Dropdown>
+            <!-- Sort Filter -->
+            <div class="w-full md:w-1/4">
+                <InputLabel value="Sort Order" />
+                <div class="relative" style="position: static">
+                    <Dropdown align="left" width="48">
+                        <template #trigger>
+                            <SecondaryButton class="w-full justify-between">
+                                {{ sortOrderLabel }}
+                                <svg
+                                    class="ml-2 -mr-0.5 h-4 w-4"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                            </SecondaryButton>
+                        </template>
+                        <template #content>
+                            <div>
+                                <button
+                                    class="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                    @click="updateSortOrder('newest')"
+                                >
+                                    Newest First
+                                </button>
+                                <button
+                                    class="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                    @click="updateSortOrder('oldest')"
+                                >
+                                    Oldest First
+                                </button>
+                                <button
+                                    class="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                    @click="updateSortOrder('a-z')"
+                                >
+                                    A-Z
+                                </button>
+                                <button
+                                    class="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                    @click="updateSortOrder('z-a')"
+                                >
+                                    Z-A
+                                </button>
+                            </div>
+                        </template>
+                    </Dropdown>
+                </div>
+            </div>
+
+            <div class="w-full md:w-auto">
+                <PrimaryButton @click="resetFilters">
+                    Reset Filters
+                </PrimaryButton>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
+import { router } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import TextInput from "@/Components/TextInput.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 
 const props = defineProps({
@@ -104,10 +117,8 @@ const filters = ref({
     sort: getValidSort(props.initialFilters?.sort || "newest"),
 });
 
-// Initialize filters on mount to ensure they're set correctly
+// Initialize filters on mount
 onMounted(() => {
-    // Force sort to be 'newest' by default
-    filters.value.sort = "newest";
     emit("update:filters", filters.value);
 });
 
@@ -132,8 +143,6 @@ const sortOrderLabel = computed(() => {
         "a-z": "A-Z",
         "z-a": "Z-A",
     };
-
-    // Make sure to return a default value if current sort isn't in the labels object
     return labels[filters.value.sort] || "Newest First";
 });
 
@@ -144,6 +153,16 @@ const updateSortOrder = (newSortOrder) => {
 };
 
 const applyFilters = () => {
+    emit("apply");
+};
+
+// Reset filters
+const resetFilters = () => {
+    filters.value = {
+        search: "",
+        sort: "newest",
+    };
+    emit("update:filters", filters.value);
     emit("apply");
 };
 </script>

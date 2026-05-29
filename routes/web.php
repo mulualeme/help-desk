@@ -6,6 +6,7 @@ use App\Http\Controllers\AgentController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\KnowledgeBaseCategoryController;
 use App\Http\Controllers\KnowledgeBaseArticleController;
+use App\Http\Controllers\SlaController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -56,6 +57,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/knowledge-base', [KnowledgeBaseCategoryController::class, 'index'])->name('knowledge-base.index');
     Route::resource('knowledge-base/categories', KnowledgeBaseCategoryController::class, ['as' => 'knowledge-base']);
     Route::resource('knowledge-base/articles', KnowledgeBaseArticleController::class, ['as' => 'knowledge-base']);
+});
+
+// SLA Management Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('slas', SlaController::class);
+    Route::patch('slas/{sla}/toggle-status', [SlaController::class, 'toggleStatus'])->name('slas.toggle-status');
 });
 
 require __DIR__.'/auth.php';

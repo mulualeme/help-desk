@@ -16,15 +16,15 @@
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <!-- Search and Filter Controls -->
+                <SearchFilters
+                    :initial-filters="filters"
+                    @update:filters="updateFilters"
+                    @apply="applyFilters"
+                />
+
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <!-- Search and Filter Controls -->
-                        <SearchFilters
-                            :initial-filters="filters"
-                            @update:filters="updateFilters"
-                            @apply="applyFilters"
-                        />
-
                         <!-- Customer Table -->
                         <CustomerTable
                             :customers="customers"

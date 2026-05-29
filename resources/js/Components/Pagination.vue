@@ -1,7 +1,10 @@
 <template>
     <div class="mt-6" v-if="links && links.length > 0">
         <div class="flex justify-between flex-col md:flex-row gap-4">
-            <div class="text-sm text-gray-700">
+            <div
+                class="text-sm text-gray-700"
+                v-if="meta && meta.from && meta.to && meta.total"
+            >
                 Showing {{ meta.from }} to {{ meta.to }} of {{ meta.total }}
                 {{ itemName }}
             </div>
@@ -42,7 +45,7 @@ const props = defineProps({
     },
     meta: {
         type: Object,
-        required: true,
+        default: () => ({}),
     },
     itemName: {
         type: String,

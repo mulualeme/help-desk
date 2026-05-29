@@ -12,6 +12,7 @@ import {
     Users,
     UserRound,
     BookOpen,
+    ClipboardList,
 } from "lucide-vue-next";
 
 const props = defineProps({
@@ -66,6 +67,12 @@ const navigation = computed(() => {
             href: "customers.index",
             icon: UserRound,
             permission: "view customers",
+        },
+        {
+            name: "SLAs",
+            href: "slas.index",
+            icon: ClipboardList,
+            permission: "view sla",
         },
         {
             name: "Knowledge Base",

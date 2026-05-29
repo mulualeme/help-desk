@@ -70,5 +70,11 @@ class DatabaseSeeder extends Seeder
         
         // Seed knowledge base categories and articles
         $this->call(KnowledgeBaseSeeder::class);
+
+        // Add SlaSeeder
+        $this->call(SlaSeeder::class);
+
+        // Add SlaPermissionsSeeder
+        $this->call(SlaPermissionsSeeder::class);
     }
 }
